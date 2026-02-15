@@ -25,3 +25,16 @@ services:
       - DB_USER=${POSTGRES_USER}
       - DB_PASSWORD=${POSTGRES_PASSWORD}
     command: ["python3", "reports/weekly_report.py"]
+
+  daily-report:
+    build: .
+    volumes:
+      - ./reports:/app/reports:ro
+    environment:
+      - TZ=Australia/Sydney
+      - DB_HOST=adventuretube.net
+      - DB_PORT=5432
+      - DB_NAME=family_member_schedule
+      - DB_USER=${POSTGRES_USER}
+      - DB_PASSWORD=${POSTGRES_PASSWORD}
+    command: ["python3", "reports/daily_report.py"]
