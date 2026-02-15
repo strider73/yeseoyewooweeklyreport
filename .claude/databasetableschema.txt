@@ -1,0 +1,102 @@
+-- ==========================================
+-- 1. CLEANUP (Optional: Only if you want to start fresh)
+-- ==========================================
+DROP TABLE IF EXISTS activity_logs CASCADE;
+DROP TABLE IF EXISTS weekly_subject_targets CASCADE;
+DROP TABLE IF EXISTS workout_types CASCADE;
+DROP TABLE IF EXISTS subjects CASCADE;
+DROP TABLE IF EXISTS children CASCADE;
+DROP TYPE IF EXISTS activity_category CASCADE;
+
+-- ==========================================
+-- 2. ENUMS & CORE TABLES
+-- ==========================================
+
+-- Define categories for easy filtering
+CREATE TYPE activity_category AS ENUM ('Study', 'Workout', 'Rest', 'Routine');
+
+-- Daughter Profiles
+CREATE TABLE children (
+    child_id SERIAL PRIMARY KEY,
+    name VARCHAR(50) NOT NULL UNIQUE, -- 'Yeseo' or 'Yewoo'
+    age INTEGER,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- ==========================================
+-- 3. MASTER DATA (Subjects & Workouts)
+-- ==========================================
+
+-- Study Subjects (Maths, Chemistry, Piano, etc.)
+CREATE TABLE subjects (
+    subject_id SERIAL PRIMARY KEY,
+    child_id INTEGER REFERENCES children(child_id) ON DELETE CASCADE,
+    subject_name VARCHAR(100) NOT NULL,
+    is_academic BOOLEAN DEFAULT TRUE, -- TRUE for school, FALSE for Music/Extra
+    UNIQUE(child_id, subject_name)
+);
+
+-- Workout Types (Jogging, Tennis, Gym)
+CREATE TABLE workout_types (
+    workout_id SERIAL PRIMARY KEY,
+    child_id INTEGER REFERENCES children(child_id) ON DELETE CASCADE,
+    workout_name VARCHAR(50) NOT NULL, -- 'Jogging', 'Tennis', 'Gym'
+    target_sessions_per_week INTEGER DEFAULT 0,
+    target_minutes_per_session INTEGER,
+    UNIQUE(child_id, workout_name)
+);
+
+-- ==========================================
+-- 4. LOGGING & REPORTING
+-- ==========================================
+
+-- Central Activity Log for all daily entries
+CREATE TABLE activity_logs (
+    log_id SERIAL PRIMARY KEY,
+    child_id INTEGER REFERENCES children(child_id) ON DELETE CASCADE,
+    category activity_category NOT NULL,
+    
+    -- Links to master data (optional depending on category)
+    subject_id INTEGER REFERENCES subjects(subject_id) ON DELETE SET NULL,
+    workout_id INTEGER REFERENCES workout_types(workout_id) ON DELETE SET NULL,
+    
+    activity_name VARCHAR(100), -- Specific detail (e.g., 'Chapter 1 review')
+    activity_date DATE NOT NULL DEFAULT CURRENT_DATE,
+    actual_minutes INTEGER NOT NULL,
+    
+    -- Quality tracking
+    rest_quality_score INTEGER CHECK (rest_quality_score BETWEEN 1 AND 5),
+    deviation_reason TEXT, -- Why it differed from the standard schedule
+    
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Weekly Targets (To track "Actual vs Planned" per week)
+CREATE TABLE weekly_goals (
+    goal_id SERIAL PRIMARY KEY,
+    child_id INTEGER REFERENCES children(child_id) ON DELETE CASCADE,
+    week_start_date DATE NOT NULL,
+    target_study_hours FLOAT,
+    target_workout_count INTEGER,
+    UNIQUE(child_id, week_start_date)
+);
+
+-- ==========================================
+-- 5. INITIAL DATA SEEDING
+-- ==========================================
+
+-- Create Daughters
+INSERT INTO children (name, age) VALUES ('Yeseo', 16), ('Yewoo', 15);
+
+-- Seed Yeseo's Subjects & Workouts
+INSERT INTO subjects (child_id, subject_name) VALUES 
+(1, 'Maths'), (1, 'Chemistry'), (1, 'Physics'), (1, 'Literature');
+INSERT INTO workout_types (child_id, workout_name, target_sessions_per_week, target_minutes_per_session) 
+VALUES (1, 'Jogging', 4, 30);
+
+-- Seed Yewoo's Subjects (Academic + Music) & Workouts
+INSERT INTO subjects (child_id, subject_name, is_academic) VALUES 
+(2, 'Methods', TRUE), (2, 'Legal Studies', TRUE), (2, 'Chemistry', TRUE),
+(2, 'Piano', FALSE), (2, 'Music Theory', FALSE), (2, 'Music Composition', FALSE);
+INSERT INTO workout_types (child_id, workout_name, target_sessions_per_week, target_minutes_per_session) 
+VALUES (2, 'Jogging', 4, 30), (2, 'Tennis', 2, 60), (2, 'Gym', 1, 45);
