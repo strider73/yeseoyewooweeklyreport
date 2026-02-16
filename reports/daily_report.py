@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Daily report generation for Yewoo & Yeseo.
 
-Outputs today's activity totals with 7-day rolling averages and trend arrows.
-Designed to be called by n8n at 10pm AEST nightly.
+Outputs yesterday's activity totals with 7-day rolling averages and trend arrows.
+Designed to be called by n8n at 7:10am AEST daily (reporting on the previous day).
 
 Usage:
     python daily_report.py [--date YYYY-MM-DD] [--child_id N] [--format text|json]
@@ -11,7 +11,7 @@ Usage:
 import argparse
 import json
 import sys
-from datetime import date
+from datetime import date, timedelta
 from zoneinfo import ZoneInfo
 
 from config import CHILDREN, TIMEZONE
@@ -223,7 +223,7 @@ def main():
     if args.date:
         report_date = date.fromisoformat(args.date)
     else:
-        report_date = date.today()  # n8n runs in Melbourne timezone
+        report_date = date.today() - timedelta(days=1)  # report on yesterday
 
     try:
         conn = get_connection()
