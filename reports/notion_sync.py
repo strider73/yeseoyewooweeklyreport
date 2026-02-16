@@ -205,7 +205,7 @@ def main():
     if args.date:
         target_date = date.fromisoformat(args.date)
     elif not args.all:
-        target_date = date.today()
+        target_date = date.today() - timedelta(days=1)  # sync yesterday
 
     date_label = str(target_date) if target_date else "all dates"
 
