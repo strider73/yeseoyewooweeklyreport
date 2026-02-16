@@ -87,8 +87,11 @@
 | actual_minutes | integer | NO | |
 | deviation_reason | text | YES | |
 | created_at | timestamp | YES | CURRENT_TIMESTAMP |
+| notion_page_id | text (UNIQUE) | YES | |
 
 **Enum: activity_category** → `Study`, `Workout`, `Rest`, `Routine`
+
+**Index:** `idx_activity_logs_notion_page_id` UNIQUE on `notion_page_id` (duplicate prevention for Notion sync)
 
 ---
 

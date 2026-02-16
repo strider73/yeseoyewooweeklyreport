@@ -40,3 +40,14 @@ WORKOUT_IDS = {
 
 # Reverse lookup: "Who" select -> child_id
 CHILD_NAME_TO_ID = {"Yewoo": 1, "Yeseo": 2}
+
+# Activity title aliases → canonical subject/workout name
+# Used when Subject select is empty and we fall back to Activity title
+ACTIVITY_ALIASES = {
+    "Jog": "Jogging",
+    "Piano": "Piano Practice",
+    "Dinner": "Rest",
+    "Rest": "Rest",
+    "Sleep": "Rest",
+    "Break": "Rest",
+}
