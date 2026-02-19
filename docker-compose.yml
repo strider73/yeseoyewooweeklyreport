@@ -1,4 +1,18 @@
 services:
+  sync-subjects:
+    build: .
+    volumes:
+      - ./reports:/app/reports
+    environment:
+      - TZ=Australia/Sydney
+      - DB_HOST=adventuretube.net
+      - DB_PORT=5432
+      - DB_NAME=family_member_schedule
+      - DB_USER=${POSTGRES_USER}
+      - DB_PASSWORD=${POSTGRES_PASSWORD}
+      - NOTION_API_KEY=${NOTION_API_KEY}
+    command: ["python3", "reports/sync_subjects.py"]
+
   notion-sync:
     build: .
     volumes:

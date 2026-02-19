@@ -28,14 +28,21 @@ from datetime import datetime, date, timedelta
 import requests
 import psycopg2
 
-from config import (
-    DB_CONFIG, NOTION_DB_IDS, SUBJECT_IDS, WORKOUT_IDS, CHILDREN,
-    ACTIVITY_ALIASES, MAX_DURATION,
-)
+from config import DB_CONFIG, NOTION_DB_IDS, CHILDREN, MAX_DURATION
 
 NOTION_API_KEY = os.environ.get("NOTION_API_KEY", "")
 NOTION_VERSION = "2022-06-28"
 NOTION_BASE = "https://api.notion.com/v1"
+SUBJECTS_FILE = os.path.join(os.path.dirname(__file__), "subjects.json")
+
+
+def load_subjects():
+    with open(SUBJECTS_FILE, "r") as f:
+        data = json.load(f)
+    subject_ids = {int(k): v for k, v in data["subject_ids"].items()}
+    workout_ids = {int(k): v for k, v in data["workout_ids"].items()}
+    aliases = data.get("activity_aliases", {})
+    return subject_ids, workout_ids, aliases
 
 
 def notion_headers():
@@ -84,7 +91,7 @@ def query_completed_entries(db_id, target_date=None):
     return entries
 
 
-def parse_entry(entry, child_id):
+def parse_entry(entry, child_id, subject_ids, workout_ids, aliases):
     """Parse a Notion page into an activity_logs-ready dict."""
     props = entry["properties"]
     who = CHILDREN[child_id]
@@ -96,15 +103,15 @@ def parse_entry(entry, child_id):
     if not subject_name:
         title_parts = props.get("Activity", {}).get("title", [])
         raw_title = "".join(p.get("plain_text", "") for p in title_parts).strip()
-        subject_name = ACTIVITY_ALIASES.get(raw_title, raw_title)
+        subject_name = aliases.get(raw_title, raw_title)
 
     # Infer category from subject
     category = None
     if subject_name == "Rest":
         category = "Rest"
-    elif subject_name in WORKOUT_IDS.get(child_id, {}):
+    elif subject_name in workout_ids.get(child_id, {}):
         category = "Workout"
-    elif subject_name in SUBJECT_IDS.get(child_id, {}):
+    elif subject_name in subject_ids.get(child_id, {}):
         category = "Study"
 
     if not category:
@@ -114,11 +121,11 @@ def parse_entry(entry, child_id):
     subject_id = None
     workout_id = None
     if category == "Study":
-        subject_id = SUBJECT_IDS.get(child_id, {}).get(subject_name)
+        subject_id = subject_ids.get(child_id, {}).get(subject_name)
         if subject_id is None:
             return None, f"Unknown study subject for {who}: {subject_name}"
     elif category == "Workout":
-        workout_id = WORKOUT_IDS.get(child_id, {}).get(subject_name)
+        workout_id = workout_ids.get(child_id, {}).get(subject_name)
         if workout_id is None:
             return None, f"Unknown workout for {who}: {subject_name}"
 
@@ -213,6 +220,8 @@ def main():
 
     date_label = str(target_date) if target_date else "all dates"
 
+    subject_ids, workout_ids, aliases = load_subjects()
+
     synced = []
     errors = []
 
@@ -229,7 +238,7 @@ def main():
             print(f"  Found {len(entries)} completed entries.")
 
             for entry in entries:
-                record, err = parse_entry(entry, child_id)
+                record, err = parse_entry(entry, child_id, subject_ids, workout_ids, aliases)
                 if err:
                     page_id = entry["id"]
                     errors.append({"page_id": page_id, "who": who, "error": err})

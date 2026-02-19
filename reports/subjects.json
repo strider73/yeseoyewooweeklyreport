@@ -1,0 +1,26 @@
+{
+  "subject_ids": {
+    "1": {
+      "Maths": 35, "Chemistry": 36, "Physics": 37,
+      "Reading": 38, "Biology": 47, "JMSS Prep": 48,
+      "SR": 49, "General A": 50
+    },
+    "2": {
+      "Piano Practice": 39, "Music Theory": 40, "Music Composition": 41,
+      "Review/Planning": 42, "Chemistry": 43, "Legal Studies": 44,
+      "Methods": 45, "Literature": 46, "VCE Music": 51
+    }
+  },
+  "workout_ids": {
+    "1": {"Jogging": 9, "Tennis": 11},
+    "2": {"Jogging": 10}
+  },
+  "activity_aliases": {
+    "Jog": "Jogging",
+    "Piano": "Piano Practice",
+    "Dinner": "Rest",
+    "Rest": "Rest",
+    "Sleep": "Rest",
+    "Break": "Rest"
+  }
+}
