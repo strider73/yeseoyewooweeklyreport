@@ -30,7 +30,7 @@ import psycopg2
 
 from config import (
     DB_CONFIG, NOTION_DB_IDS, SUBJECT_IDS, WORKOUT_IDS, CHILDREN,
-    ACTIVITY_ALIASES,
+    ACTIVITY_ALIASES, MAX_DURATION,
 )
 
 NOTION_API_KEY = os.environ.get("NOTION_API_KEY", "")
@@ -135,6 +135,10 @@ def parse_entry(entry, child_id):
 
     if actual_minutes <= 0:
         return None, f"Invalid duration: {actual_minutes} minutes"
+
+    max_dur = MAX_DURATION.get(child_id, 120)
+    if actual_minutes > max_dur:
+        return None, f"Duration {actual_minutes}min exceeds max {max_dur}min for {who}"
 
     activity_date = start_dt.date()
 

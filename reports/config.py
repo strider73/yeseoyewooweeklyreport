@@ -9,6 +9,9 @@ DB_CONFIG = {
 }
 
 CHILDREN = {1: "Yewoo", 2: "Yeseo"}
+
+# Max duration per session (minutes) - entries exceeding this are corrupted
+MAX_DURATION = {1: 180, 2: 240}  # Yewoo: 180, Yeseo: 240
 CHILDREN_KR = {1: "여우", 2: "예서"}
 
 TIMEZONE = "Australia/Melbourne"
@@ -24,11 +27,12 @@ SUBJECT_IDS = {
     1: {  # Yewoo
         "Maths": 35, "Chemistry": 36, "Physics": 37,
         "Reading": 38, "Biology": 47, "JMSS Prep": 48,
+        "SR": 49, "General A": 50,
     },
     2: {  # Yeseo
         "Piano Practice": 39, "Music Theory": 40, "Music Composition": 41,
         "Review/Planning": 42, "Chemistry": 43, "Legal Studies": 44,
-        "Methods": 45, "Literature": 46,
+        "Methods": 45, "Literature": 46, "VCE Music": 51,
     },
 }
 
