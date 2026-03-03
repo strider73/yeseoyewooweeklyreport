@@ -44,7 +44,7 @@ def format_minutes(minutes):
         return f"{mins}m"
 
 
-def make_bar(actual, average, width=20):
+def make_bar(actual, average, width=10):
     """Build a visual bar with ║ fixed at the midpoint (position width//2).
 
     The average always maps to the midpoint. Actual fills proportionally:
@@ -52,7 +52,7 @@ def make_bar(actual, average, width=20):
       actual=avg    → fills to ║
       actual=2*avg  → fills entire bar (capped)
     """
-    mid = width // 2  # ║ position (10 for width=20)
+    mid = width // 2  # ║ position (5 for width=10)
     if average > 0:
         fill = round((actual / average) * mid)
     elif actual > 0:
