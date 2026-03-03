@@ -10,15 +10,15 @@ Reports are delivered via n8n workflows: SMS daily (10pm), Email+SMS weekly (Sat
 Sent daily at 7am/7:10am AEST (reporting on previous day). Visual bar chart format showing actual vs 7-day average.
 
 ### Bar Chart Design
-- Fixed-width bar of 20 characters with `║` ALWAYS at the exact middle (position 10)
+- Fixed-width bar of 10 characters with `║` ALWAYS at the exact middle (position 5)
 - `║` represents the 7-day average — it never moves from the center
-- Scale adapts per row: each subject's own average maps to position 10
+- Scale adapts per row: each subject's own average maps to position 5
 - `█` fills from left based on actual/average ratio:
-  - actual = 0 → no fill: `[··········║··········]`
-  - actual = 50% of avg: `[█████·····║··········]`
-  - actual = average: `[██████████║··········]`
-  - actual = 1.5x avg: `[██████████║█████·····]`
-  - actual >= 2x avg: `[██████████║██████████]` (capped)
+  - actual = 0 → no fill: `[·····║····]`
+  - actual = 50% of avg: `[██···║····]`
+  - actual = average: `[█████║····]`
+  - actual = 1.5x avg: `[█████║██··]`
+  - actual >= 2x avg: `[█████║████]` (capped)
 
 ### Trend Arrows
 - `↑` — more than 10% above 7-day average
@@ -52,18 +52,18 @@ Sent daily at 7am/7:10am AEST (reporting on previous day). Visual bar chart form
 📊 Yewoo Daily Report — Mar 02 (Mon)
 ══════════════════════════════════════
 
-📚 Study  6h29m [██████████║████████·] ↑ (avg 2h49m)
+📚 Study  6h29m [█████║████] ↑ (avg 2h49m)
 ──────────────────────────────────────
-Physics    2h36m [██████████║█████████] ↑ avg 1h10m
-Maths      1h42m [██████████║█········] ↑ avg 1h26m
-Planning   1h26m [██████████║█████████] ↑ avg 43m
-Chemistry    45m [███████···║·········] ↓ avg 1h8m
-Biology        — [··········║·········] ↓ avg 1h40m
-Reading        — [··········║·········] ↓ avg 1h
+Physics    2h36m [█████║████] ↑ avg 1h10m
+Maths      1h42m [█████║····] ↑ avg 1h26m
+Planning   1h26m [█████║████] ↑ avg 43m
+Chemistry    45m [███··║····] ↓ avg 1h8m
+Biology        — [·····║····] ↓ avg 1h40m
+Reading        — [·····║····] ↓ avg 1h
 
-🏃 Workout  0m [··········║·········] ↓ (avg 26m)
+🏃 Workout  0m [·····║····] ↓ (avg 26m)
 ──────────────────────────────────────
-Jogging      — [··········║·········] ↓ avg 26m
+Jogging      — [·····║····] ↓ avg 26m
 
 😴 Rest  not logged
 ══════════════════════════════════════
@@ -75,17 +75,17 @@ Jogging      — [··········║·········] ↓ avg 26m
 📊 Yeseo Daily Report — Mar 02 (Mon)
 ══════════════════════════════════════
 
-📚 Study  5h39m [██████████║████████·] ↑ (avg 2h55m)
+📚 Study  5h39m [█████║████] ↑ (avg 2h55m)
 ──────────────────────────────────────
-Chemistry       2h31m [██████████║█████████] ↑ avg 1h7m
-Piano Practice  1h53m [██████████║█████████] ↑ avg 36m
-VCE Music       1h15m [██████████║█████████] ↑ avg 28m
-Legal Studies       — [··········║·········] ↓ avg 2h3m
-Methods             — [··········║·········] ↓ avg 1h26m
+Chemistry       2h31m [█████║████] ↑ avg 1h7m
+Piano Practice  1h53m [█████║████] ↑ avg 36m
+VCE Music       1h15m [█████║████] ↑ avg 28m
+Legal Studies       — [·····║····] ↓ avg 2h3m
+Methods             — [·····║····] ↓ avg 1h26m
 
-🏃 Workout  0m [··········║·········] ↓ (avg 21m)
+🏃 Workout  0m [·····║····] ↓ (avg 21m)
 ──────────────────────────────────────
-Jogging      — [··········║·········] ↓ avg 21m
+Jogging      — [·····║····] ↓ avg 21m
 
 😴 Rest  not logged
 ══════════════════════════════════════
@@ -103,22 +103,22 @@ No activities logged today.
 
 **First time subject (no average):**
 ```
-Literature   1h30m [██████████║·········] NEW
+Literature   1h30m [█████║····] NEW
 ```
 
 **Exactly at average:**
 ```
-Chemistry    1h8m  [██████████║·········] → avg 1h8m
+Chemistry    1h8m  [█████║····] → avg 1h8m
 ```
 
 **Limited data (<3 days history):**
 ```
-📚 Study  2h31m [██████████║█████████] ↑ (avg 1h7m, limited data)
+📚 Study  2h31m [█████║████] ↑ (avg 1h7m, limited data)
 ```
 
 **No workout logged:**
 ```
-🏃 Workout  0m [··········║·········] ↓ (avg 26m)
+🏃 Workout  0m [·····║····] ↓ (avg 26m)
 ──────────────────────────────────────
   No workout logged
 ```
@@ -129,50 +129,82 @@ Chemistry    1h8m  [██████████║·········] → avg
 
 ---
 
-## Weekly SMS Report
+## Weekly SMS Report (per child, Telegram + Gmail)
 
-Sent Saturday at 9pm AEST. Shows both children in one message with weekly totals and 4-week averages.
+Sent Sunday at 9:30pm/9:40pm AEST. Same visual bar chart format as daily, comparing this week vs 4-week average.
 
 ### Format
 
 ```
-Weekly Report: Mon DD - Mon DD
+📊 {Name} Weekly Report
+   {Mon DD — Mon DD}
+══════════════════════════════════════
 
-[Name]
-Study: XhYm arrow (4wk avg: XhYm)
-  Subject1 XhYm arrow | Subject2 XhYm arrow
-  ...
-Workout: XhYm arrow (4wk avg: XhYm)
-  Type Sessions Total arrow
-Days active: X/7 (4wk avg: X/7)
-
-[Name]
+📚 Study  {total} [{bar}] {arrow} (4wk avg {avg})
+──────────────────────────────────────
+{Subject}  {time} [{bar}] {arrow} avg {avg}
 ...
+
+🏃 Workout  {total} [{bar}] {arrow} (4wk avg {avg})
+──────────────────────────────────────
+{Workout} {Nx} {time} [{bar}] {arrow} avg {avg}
+...
+
+😴 Rest  {status}
+📅 Days active: X/7 (4wk avg: X/7)
+══════════════════════════════════════
 ```
 
-### Example
+### Yewoo Example (Feb 25 — Mar 03)
 
 ```
-Weekly Report: Feb 9 - Feb 15
+📊 Yewoo Weekly Report
+   Feb 25 — Mar 03
+══════════════════════════════════════
 
-[Yewoo]
-Study: 22h30m ↑ (4wk avg: 19h45m)
-  Maths    10h0m ↑ | Chem    7h30m ↑
-  Physics   3h30m → | JMSS    1h0m NEW
-  Reading   1h10m →
-Workout: 5h30m ↑ (4wk avg: 2h30m)
-  Jogging 4x 2h0m → | Tennis 1x 3h0m NEW
-Days active: 5/7 (4wk avg: 4.5/7)
+📚 Study  17h42m [█████║····] → (4wk avg 19h3m)
+──────────────────────────────────────
+Chemistry  5h16m [█████║█···] ↑ avg 3h56m
+Maths       5h6m [████·║····] ↓ avg 6h58m
+Physics    4h11m [█████║····] → avg 4h11m
+Planning    2h9m [█████║····] NEW
+Reading       1h [█████║····] → avg 1h6m
+Biology        — [·····║····] ↓ avg 2h15m
+JMSS Prep      — [·····║····] ↓ avg 2h9m
 
-[Yeseo]
-Study: 16h30m → (4wk avg: 17h0m)
-  Piano    7h30m ↑ | Chem    4h0m ↓
-  Methods  2h30m → | Lit     2h0m ↑
-  Comp     1h0m  ↓ | Legal     -  ↓
-Workout: 1h30m ↓ (4wk avg: 2h15m)
-  Jogging 3x 1h30m ↓
-Rest: 7h45m ↑ (4wk avg: 5h30m)
-Days active: 6/7 (4wk avg: 5.5/7)
+🏃 Workout  26m [█····║····] ↓ (4wk avg 2h46m)
+──────────────────────────────────────
+Jogging  1x   26m [██···║····] ↓ avg 1h16m
+Tennis          — [·····║····] ↓ avg 3h
+
+😴 Rest  not logged
+📅 Days active: 6/7 (4wk avg: 4.3/7)
+══════════════════════════════════════
+```
+
+### Yeseo Example (Feb 25 — Mar 03)
+
+```
+📊 Yeseo Weekly Report
+   Feb 25 — Mar 03
+══════════════════════════════════════
+
+📚 Study  8h40m [███··║····] ↓ (4wk avg 16h30m)
+──────────────────────────────────────
+Chemistry          3h49m [█████║····] ↑ avg 3h26m
+Piano Practice     1h53m [██···║····] ↓ avg 4h28m
+Methods            1h43m [██···║····] ↓ avg 3h36m
+VCE Music          1h15m [█████║████] ↑ avg 28m
+Music Theory           — [·····║····] ↓ avg 3h30m
+Legal Studies          — [·····║····] ↓ avg 2h38m
+
+🏃 Workout  0m [·····║····] ↓ (4wk avg 1h8m)
+──────────────────────────────────────
+Jogging         — [·····║····] ↓ avg 1h8m
+
+😴 Rest  0m ↓  (4wk avg 4h53m)
+📅 Days active: 3/7 (4wk avg: 5.0/7)
+══════════════════════════════════════
 ```
 
 ---
