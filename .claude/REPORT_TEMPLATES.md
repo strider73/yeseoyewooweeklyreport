@@ -5,25 +5,20 @@ Reports are delivered via n8n workflows: SMS daily (10pm), Email+SMS weekly (Sat
 
 ---
 
-## Daily SMS Report (per child)
+## Daily Report (per child, Telegram + Gmail)
 
-Sent nightly at 10pm AEST. Shows today's totals with 7-day rolling averages and trend arrows.
+Sent daily at 7am/7:10am AEST (reporting on previous day). Visual bar chart format showing actual vs 7-day average.
 
-### Format
-
-```
-[Name] Daily Report - Mon DD (Day)
-
-Study: XhYm (7d avg: XhYm)
-  Subject1  XhYm  arrow (avg XhYm)
-  Subject2  XhYm  arrow (avg XhYm)
-  ...
-
-Workout: XhYm (7d avg: XhYm)
-  Type1  XhYm
-
-Rest: XhYm (7d avg: XhYm)
-```
+### Bar Chart Design
+- Fixed-width bar of 20 characters with `║` ALWAYS at the exact middle (position 10)
+- `║` represents the 7-day average — it never moves from the center
+- Scale adapts per row: each subject's own average maps to position 10
+- `█` fills from left based on actual/average ratio:
+  - actual = 0 → no fill: `[··········║··········]`
+  - actual = 50% of avg: `[█████·····║··········]`
+  - actual = average: `[██████████║··········]`
+  - actual = 1.5x avg: `[██████████║█████·····]`
+  - actual >= 2x avg: `[██████████║██████████]` (capped)
 
 ### Trend Arrows
 - `↑` — more than 10% above 7-day average
@@ -31,44 +26,106 @@ Rest: XhYm (7d avg: XhYm)
 - `→` — within 10% of average (on track)
 - `NEW` — no prior history for this item
 
-### Examples with Data
+### Format
 
 ```
-[Yewoo] Daily Report - Feb 13 (Fri)
+📊 {Name} Daily Report — {Mon DD (Day)}
+══════════════════════════════════════
 
-Study: 3h0m ↓ (7d avg: 5h12m)
-  Maths    2h0m  → (avg 2h0m)
-  Chem     1h0m  ↓ (avg 1h48m)
-  Physics    -   ↓ (avg 36m)
-  Reading    -   ↓ (avg 14m)
+📚 Study  {total} {arrow}  (avg {avg})
+──────────────────────────────────────
+{Subject}  {time} [{bar}] {arrow} avg {avg}
+...
 
-Workout: 3h0m ↑ (7d avg: 42m)
-  Tennis   3h0m
-  Jogging    -
+🏃 Workout  {total} {arrow}  (avg {avg})
+──────────────────────────────────────
+{Workout}  {time} [{bar}] {arrow} avg {avg}
+...
 
-Rest: 0m
+😴 Rest  {status}
+══════════════════════════════════════
 ```
 
+### Yewoo Example (Mar 02)
+
 ```
-[Yeseo] Daily Report - Feb 13 (Fri)
+📊 Yewoo Daily Report — Mar 02 (Mon)
+══════════════════════════════════════
 
-Study: 3h30m ↓ (7d avg: 4h18m)
-  Piano    1h30m → (avg 1h18m)
-  Chem       30m ↓ (avg 1h0m)
-  Methods     -  ↓ (avg 30m)
-  Lit         -  ↓ (avg 24m)
-  Comp        -  ↓ (avg 12m)
+📚 Study  6h29m ↑  (avg 4h27m)
+──────────────────────────────────────
+Physics    2h36m [██████████║██████████] ↑ avg 1h10m
+Maths      1h42m [██████████║██·······] ↑ avg 1h26m
+Planning   1h26m [██████████║██████████] ↑ avg 43m
+Chemistry    45m [███·······║·········] ↓ avg 1h8m
+Biology        — [··········║·········] ↓ avg 1h40m
+Reading        — [··········║·········] ↓ avg 1h
 
-Workout: 0m ↓ (7d avg: 30m)
+🏃 Workout  0m ↓  (avg 26m)
+──────────────────────────────────────
+Jogging        — [··········║·········] ↓ avg 26m
 
-Rest: 1h30m
-  Nap 1h30m
+😴 Rest  not logged
+══════════════════════════════════════
+```
+
+### Yeseo Example (Mar 02)
+
+```
+📊 Yeseo Daily Report — Mar 02 (Mon)
+══════════════════════════════════════
+
+📚 Study  5h39m ↑  (avg 3h20m)
+──────────────────────────────────────
+Chemistry      2h31m [██████████║██████████] ↑ avg 1h7m
+Piano Practice 1h53m [██████████║██████████] ↑ avg 36m
+VCE Music      1h15m [██████████║██████████] ↑ avg 28m
+Legal Studies      — [··········║·········] ↓ avg 2h3m
+Methods            — [··········║·········] ↓ avg 1h26m
+
+🏃 Workout  0m ↓  (avg 21m)
+──────────────────────────────────────
+Jogging            — [··········║·········] ↓ avg 21m
+
+😴 Rest  not logged
+══════════════════════════════════════
 ```
 
 ### Edge Cases
-- No data for today: `[Name] No activities logged today.`
-- Fewer than 3 days of history: show averages with `(limited data)` note
+
+**No data:**
+```
+📊 Yewoo Daily Report — Mar 03 (Tue)
+══════════════════════════════════════
+No activities logged today.
+══════════════════════════════════════
+```
+
+**First time subject (no average):**
+```
+Literature   1h30m [██████████║·········] NEW
+```
+
+**Exactly at average:**
+```
+Chemistry    1h8m  [██████████║·········] → avg 1h8m
+```
+
+**Limited data (<3 days history):**
+```
+📚 Study  2h31m  (avg 1h7m, limited data)
+```
+
+**No workout logged:**
+```
+🏃 Workout  0m ↓  (avg 26m)
+──────────────────────────────────────
+  No workout logged
+```
+
+### Notes
 - Routine category entries are combined into Rest for display
+- Subject name padding is dynamic (based on longest name in that report)
 
 ---
 
