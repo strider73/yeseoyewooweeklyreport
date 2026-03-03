@@ -203,7 +203,8 @@ def format_daily_sms(name, report_date, today_cats, today_subjects,
     arrow = trend_indicator(study_total, study_avg)
     avg_note = f"avg {format_minutes(study_avg)}{limited}" if study_avg > 0 else "NEW"
     lines.append("")
-    lines.append(f"\U0001f4da Study  {format_minutes(study_total)} {arrow}  ({avg_note})")
+    study_bar = make_bar(study_total, study_avg)
+    lines.append(f"\U0001f4da Study  {format_minutes(study_total)} {study_bar} {arrow} ({avg_note})")
     lines.append(sep_single)
 
     # Collect all subjects (today + avg)
@@ -237,7 +238,8 @@ def format_daily_sms(name, report_date, today_cats, today_subjects,
     arrow = trend_indicator(workout_total, workout_avg)
     avg_note = f"avg {format_minutes(workout_avg)}{limited}" if workout_avg > 0 else "NEW"
     lines.append("")
-    lines.append(f"\U0001f3c3 Workout  {format_minutes(workout_total)} {arrow}  ({avg_note})")
+    workout_bar = make_bar(workout_total, workout_avg)
+    lines.append(f"\U0001f3c3 Workout  {format_minutes(workout_total)} {workout_bar} {arrow} ({avg_note})")
     lines.append(sep_single)
 
     # Collect all workouts (today + avg)
