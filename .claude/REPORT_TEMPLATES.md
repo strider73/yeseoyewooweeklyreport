@@ -32,12 +32,12 @@ Sent daily at 7am/7:10am AEST (reporting on previous day). Visual bar chart form
 📊 {Name} Daily Report — {Mon DD (Day)}
 ══════════════════════════════════════
 
-📚 Study  {total} {arrow}  (avg {avg})
+📚 Study  {total} [{bar}] {arrow} (avg {avg})
 ──────────────────────────────────────
 {Subject}  {time} [{bar}] {arrow} avg {avg}
 ...
 
-🏃 Workout  {total} {arrow}  (avg {avg})
+🏃 Workout  {total} [{bar}] {arrow} (avg {avg})
 ──────────────────────────────────────
 {Workout}  {time} [{bar}] {arrow} avg {avg}
 ...
@@ -52,18 +52,18 @@ Sent daily at 7am/7:10am AEST (reporting on previous day). Visual bar chart form
 📊 Yewoo Daily Report — Mar 02 (Mon)
 ══════════════════════════════════════
 
-📚 Study  6h29m ↑  (avg 4h27m)
+📚 Study  6h29m [██████████║████████·] ↑ (avg 2h49m)
 ──────────────────────────────────────
-Physics    2h36m [██████████║██████████] ↑ avg 1h10m
-Maths      1h42m [██████████║██·······] ↑ avg 1h26m
-Planning   1h26m [██████████║██████████] ↑ avg 43m
-Chemistry    45m [███·······║·········] ↓ avg 1h8m
+Physics    2h36m [██████████║█████████] ↑ avg 1h10m
+Maths      1h42m [██████████║█········] ↑ avg 1h26m
+Planning   1h26m [██████████║█████████] ↑ avg 43m
+Chemistry    45m [███████···║·········] ↓ avg 1h8m
 Biology        — [··········║·········] ↓ avg 1h40m
 Reading        — [··········║·········] ↓ avg 1h
 
-🏃 Workout  0m ↓  (avg 26m)
+🏃 Workout  0m [··········║·········] ↓ (avg 26m)
 ──────────────────────────────────────
-Jogging        — [··········║·········] ↓ avg 26m
+Jogging      — [··········║·········] ↓ avg 26m
 
 😴 Rest  not logged
 ══════════════════════════════════════
@@ -75,17 +75,17 @@ Jogging        — [··········║·········] ↓ avg 26m
 📊 Yeseo Daily Report — Mar 02 (Mon)
 ══════════════════════════════════════
 
-📚 Study  5h39m ↑  (avg 3h20m)
+📚 Study  5h39m [██████████║████████·] ↑ (avg 2h55m)
 ──────────────────────────────────────
-Chemistry      2h31m [██████████║██████████] ↑ avg 1h7m
-Piano Practice 1h53m [██████████║██████████] ↑ avg 36m
-VCE Music      1h15m [██████████║██████████] ↑ avg 28m
-Legal Studies      — [··········║·········] ↓ avg 2h3m
-Methods            — [··········║·········] ↓ avg 1h26m
+Chemistry       2h31m [██████████║█████████] ↑ avg 1h7m
+Piano Practice  1h53m [██████████║█████████] ↑ avg 36m
+VCE Music       1h15m [██████████║█████████] ↑ avg 28m
+Legal Studies       — [··········║·········] ↓ avg 2h3m
+Methods             — [··········║·········] ↓ avg 1h26m
 
-🏃 Workout  0m ↓  (avg 21m)
+🏃 Workout  0m [··········║·········] ↓ (avg 21m)
 ──────────────────────────────────────
-Jogging            — [··········║·········] ↓ avg 21m
+Jogging      — [··········║·········] ↓ avg 21m
 
 😴 Rest  not logged
 ══════════════════════════════════════
@@ -113,12 +113,12 @@ Chemistry    1h8m  [██████████║·········] → avg
 
 **Limited data (<3 days history):**
 ```
-📚 Study  2h31m  (avg 1h7m, limited data)
+📚 Study  2h31m [██████████║█████████] ↑ (avg 1h7m, limited data)
 ```
 
 **No workout logged:**
 ```
-🏃 Workout  0m ↓  (avg 26m)
+🏃 Workout  0m [··········║·········] ↓ (avg 26m)
 ──────────────────────────────────────
   No workout logged
 ```
