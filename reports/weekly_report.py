@@ -57,6 +57,23 @@ def format_minutes(minutes):
         return f"{mins}m"
 
 
+def make_bar(actual, average, width=10):
+    """Build a visual bar with ║ fixed at the midpoint (position width//2)."""
+    mid = width // 2
+    if average > 0:
+        fill = round((actual / average) * mid)
+    elif actual > 0:
+        fill = mid
+    else:
+        fill = 0
+    fill = max(0, min(fill, width))
+    filled = "█" * fill
+    dots = "·" * (width - fill)
+    bar = filled + dots
+    bar = bar[:mid] + "║" + bar[mid + 1:]
+    return f"[{bar}]"
+
+
 # ---------------------------------------------------------------------------
 # SQL Queries
 # ---------------------------------------------------------------------------
@@ -199,6 +216,27 @@ def query_4week_avg_subjects(conn, child_id, week_end):
         return {row[0]: int(row[1]) for row in cur.fetchall()}
 
 
+def query_4week_avg_workouts(conn, child_id, week_end):
+    """4-week weekly average workout breakdown by type."""
+    avg_end = week_end - timedelta(days=7)
+    avg_start = week_end - timedelta(days=34)
+    sql = """
+        SELECT w.workout_name,
+               ROUND(SUM(al.actual_minutes)::numeric /
+                     GREATEST(COUNT(DISTINCT DATE_TRUNC('week', al.activity_date)), 1), 0) as avg_weekly_minutes
+        FROM activity_logs al
+        JOIN workout_types w ON al.workout_id = w.workout_id
+        WHERE al.child_id = %s
+          AND al.activity_date BETWEEN %s AND %s
+          AND al.category = 'Workout'
+        GROUP BY w.workout_name
+        ORDER BY avg_weekly_minutes DESC;
+    """
+    with conn.cursor() as cur:
+        cur.execute(sql, (child_id, avg_start, avg_end))
+        return {row[0]: int(row[1]) for row in cur.fetchall()}
+
+
 def query_4week_avg_days_active(conn, child_id, week_end):
     """4-week average of days active per week."""
     avg_end = week_end - timedelta(days=7)
@@ -237,46 +275,97 @@ def query_weekly_goals(conn, child_id, week_end):
 # ---------------------------------------------------------------------------
 
 def format_weekly_sms(name, week_end, week_cats, week_subjects, week_workouts,
-                      days_active, avg_cats, avg_subjects, avg_days_active):
+                      days_active, avg_cats, avg_subjects, avg_workouts,
+                      avg_days_active):
+    sep_double = "══════════════════════════════════════"
+    sep_single = "──────────────────────────────────────"
     week_start = week_end - timedelta(days=6)
-    header = f"[{name}]"
-    lines = [header]
+    date_range = f"{week_start.strftime('%b %d')} — {week_end.strftime('%b %d')}"
+    lines = [f"\U0001f4ca {name} Weekly Report", f"   {date_range}", sep_double]
 
-    # Study
+    # --- Study section ---
     study = week_cats.get("Study", {}).get("minutes", 0)
     study_avg = avg_cats.get("Study", 0)
     arrow = trend_indicator(study, study_avg)
-    lines.append(f"Study: {format_minutes(study)} {arrow} (4wk avg: {format_minutes(study_avg)})")
+    study_bar = make_bar(study, study_avg)
+    avg_note = f"4wk avg {format_minutes(study_avg)}" if study_avg > 0 else "NEW"
+    lines.append("")
+    lines.append(f"\U0001f4da Study  {format_minutes(study)} {study_bar} {arrow} ({avg_note})")
+    lines.append(sep_single)
 
-    # Subject pairs on same line
-    subj_strs = []
+    # Collect all subjects (this week + avg)
+    all_subjects = {}
     for s in week_subjects:
-        avg = avg_subjects.get(s["name"], 0)
-        a = trend_indicator(s["minutes"], avg)
-        subj_strs.append(f"{s['name']} {format_minutes(s['minutes']):>6s} {a}")
+        all_subjects[s["name"]] = {"week": s["minutes"]}
+    for subj, avg in avg_subjects.items():
+        if subj not in all_subjects:
+            all_subjects[subj] = {"week": 0}
+        all_subjects[subj]["avg"] = avg
 
-    for i in range(0, len(subj_strs), 2):
-        pair = subj_strs[i:i+2]
-        lines.append("  " + " | ".join(pair))
+    if all_subjects:
+        pad = max(len(s) for s in all_subjects)
+        for subj, vals in all_subjects.items():
+            week_val = vals.get("week", 0)
+            avg_val = vals.get("avg", 0)
+            time_str = format_minutes(week_val) if week_val > 0 else "\u2014"
+            bar = make_bar(week_val, avg_val)
+            if avg_val > 0:
+                subj_arrow = trend_indicator(week_val, avg_val)
+                avg_str = f"{subj_arrow} avg {format_minutes(avg_val)}"
+            else:
+                avg_str = "NEW"
+            lines.append(f"{subj:<{pad}s}  {time_str:>5s} {bar} {avg_str}")
 
-    # Workout
+    # --- Workout section ---
     workout = week_cats.get("Workout", {}).get("minutes", 0)
     workout_avg = avg_cats.get("Workout", 0)
     arrow = trend_indicator(workout, workout_avg)
-    lines.append(f"Workout: {format_minutes(workout)} {arrow} (4wk avg: {format_minutes(workout_avg)})")
+    workout_bar = make_bar(workout, workout_avg)
+    avg_note = f"4wk avg {format_minutes(workout_avg)}" if workout_avg > 0 else "NEW"
+    lines.append("")
+    lines.append(f"\U0001f3c3 Workout  {format_minutes(workout)} {workout_bar} {arrow} ({avg_note})")
+    lines.append(sep_single)
 
+    # Collect all workouts (this week + avg)
+    all_workouts = {}
     for w in week_workouts:
-        lines.append(f"  {w['name']} {w['sessions']}x {format_minutes(w['minutes'])}")
+        all_workouts[w["name"]] = {"week": w["minutes"], "sessions": w["sessions"]}
+    for wname, avg in avg_workouts.items():
+        if wname not in all_workouts:
+            all_workouts[wname] = {"week": 0, "sessions": 0}
+        all_workouts[wname]["avg"] = avg
 
-    # Rest (only if logged)
+    if all_workouts:
+        w_pad = max(len(w) for w in all_workouts)
+        for wname, vals in all_workouts.items():
+            week_val = vals.get("week", 0)
+            avg_val = vals.get("avg", 0)
+            sessions = vals.get("sessions", 0)
+            time_str = format_minutes(week_val) if week_val > 0 else "\u2014"
+            sess_str = f"{sessions}x" if sessions > 0 else ""
+            bar = make_bar(week_val, avg_val)
+            if avg_val > 0:
+                w_arrow = trend_indicator(week_val, avg_val)
+                avg_str = f"{w_arrow} avg {format_minutes(avg_val)}"
+            else:
+                avg_str = "NEW"
+            lines.append(f"{wname:<{w_pad}s} {sess_str:>3s} {time_str:>5s} {bar} {avg_str}")
+    else:
+        lines.append("  No workout logged")
+
+    # --- Rest section ---
     rest = week_cats.get("Rest", {}).get("minutes", 0)
     rest_avg = avg_cats.get("Rest", 0)
-    if rest > 0 or rest_avg > 0:
+    lines.append("")
+    if rest == 0 and rest_avg == 0:
+        lines.append("\U0001f634 Rest  not logged")
+    else:
         arrow = trend_indicator(rest, rest_avg)
-        lines.append(f"Rest: {format_minutes(rest)} {arrow} (4wk avg: {format_minutes(rest_avg)})")
+        lines.append(f"\U0001f634 Rest  {format_minutes(rest)} {arrow}  (4wk avg {format_minutes(rest_avg)})")
 
-    # Days active
-    lines.append(f"Days active: {days_active}/7 (4wk avg: {avg_days_active}/7)")
+    # --- Days active ---
+    lines.append(f"\U0001f4c5 Days active: {days_active}/7 (4wk avg: {avg_days_active}/7)")
+    lines.append(sep_double)
 
     return "\n".join(lines)
 
@@ -406,11 +495,12 @@ def generate_child_report(conn, child_id, name, week_end):
     days_active = query_days_active(conn, child_id, week_end)
     avg_cats = query_4week_avg_categories(conn, child_id, week_end)
     avg_subjects = query_4week_avg_subjects(conn, child_id, week_end)
+    avg_workouts = query_4week_avg_workouts(conn, child_id, week_end)
     avg_days_active = query_4week_avg_days_active(conn, child_id, week_end)
 
     sms = format_weekly_sms(name, week_end, week_cats, week_subjects,
                             week_workouts, days_active, avg_cats, avg_subjects,
-                            avg_days_active)
+                            avg_workouts, avg_days_active)
     html = format_weekly_html(name, child_id, week_end, week_cats, week_subjects,
                               week_workouts, daily_breakdown, avg_cats, avg_subjects)
 
@@ -456,12 +546,7 @@ def main():
         body = "\n".join(r["html"] for r in results.values())
         print(f'<html>\n<body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">\n{header}\n{body}\n</body>\n</html>')
     else:
-        header = f"Weekly Report: {week_start.strftime('%b %d')} - {week_end.strftime('%b %d')}"
-        sms_parts = [header, ""]
-        for r in results.values():
-            sms_parts.append(r["sms"])
-            sms_parts.append("")
-        print("\n".join(sms_parts).rstrip())
+        print("\n\n".join(r["sms"] for r in results.values()))
 
 
 if __name__ == "__main__":
