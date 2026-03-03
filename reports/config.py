@@ -1,7 +1,7 @@
 import os
 
 DB_CONFIG = {
-    "host": os.environ.get("DB_HOST", "adventuretube.net"),
+    "host": os.environ.get("DB_HOST", "travel-tube.com"),
     "port": int(os.environ.get("DB_PORT", 5432)),
     "dbname": os.environ.get("DB_NAME", "family_member_schedule"),
     "user": os.environ.get("DB_USER", "postgres"),

@@ -5,7 +5,7 @@ services:
       - ./reports:/app/reports
     environment:
       - TZ=Australia/Sydney
-      - DB_HOST=adventuretube.net
+      - DB_HOST=travel-tube.com
       - DB_PORT=5432
       - DB_NAME=family_member_schedule
       - DB_USER=${POSTGRES_USER}
@@ -19,7 +19,7 @@ services:
       - ./reports:/app/reports:ro
     environment:
       - TZ=Australia/Sydney
-      - DB_HOST=adventuretube.net
+      - DB_HOST=travel-tube.com
       - DB_PORT=5432
       - DB_NAME=family_member_schedule
       - DB_USER=${POSTGRES_USER}
@@ -33,7 +33,7 @@ services:
       - ./reports:/app/reports:ro
     environment:
       - TZ=Australia/Sydney
-      - DB_HOST=adventuretube.net
+      - DB_HOST=travel-tube.com
       - DB_PORT=5432
       - DB_NAME=family_member_schedule
       - DB_USER=${POSTGRES_USER}
@@ -46,7 +46,7 @@ services:
       - ./reports:/app/reports:ro
     environment:
       - TZ=Australia/Sydney
-      - DB_HOST=adventuretube.net
+      - DB_HOST=travel-tube.com
       - DB_PORT=5432
       - DB_NAME=family_member_schedule
       - DB_USER=${POSTGRES_USER}
