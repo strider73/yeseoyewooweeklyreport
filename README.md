@@ -1,6 +1,6 @@
-# Yewoo & Yeseo Weekly Report
+# Weekly Report
 
-Activity tracking and reporting system for two teenage daughters — Yewoo (15) and Yeseo (16).
+Activity tracking and reporting system for two teenage daughters — Second Daughter (15) and First Daughter (16).
 
 ## How It Works
 
@@ -87,4 +87,4 @@ The workflow "Notion Timer → PostgreSQL Sync - Midnight" runs daily at 12:00am
 - **Host:** adventuretube.net:5432
 - **Database:** family_member_schedule
 - **Main table:** activity_logs (child_id, category, subject_id, workout_id, activity_date, actual_minutes)
-- **Child IDs:** Yewoo = 1, Yeseo = 2
+- **Child IDs:** Second Daughter = 1, First Daughter = 2

@@ -1,7 +1,7 @@
 # Daily Input Plan
 
 ## Goal
-Provide a simple, low-friction way for Yeseo and Yewoo to submit their daily activity data into the `family_member_schedule` database so that daily and weekly reports can be generated automatically.
+Provide a simple, low-friction way for First Daughter and Second Daughter to submit their daily activity data into the `family_member_schedule` database so that daily and weekly reports can be generated automatically.
 
 ---
 
@@ -44,19 +44,19 @@ Provide a simple, low-friction way for Yeseo and Yewoo to submit their daily act
 ## Web Form Design
 
 ### Authentication
-- Simple child selection (Yeseo / Yewoo) — no login required for MVP
+- Simple child selection (First Daughter / Second Daughter) — no login required for MVP
 - Optional: PIN-based lightweight auth later
 
 ### Form Fields
 
 #### 1. Header
-- Child selector: `Yeseo` | `Yewoo`
+- Child selector: `First Daughter` | `Second Daughter`
 - Date picker (defaults to today)
 
 #### 2. Study Section
 Fields are **pre-populated per child** from the `subjects` table:
 
-**Yewoo's subjects:**
+**Second Daughter's subjects:**
 | Field | Subject ID | Input |
 |-------|-----------|-------|
 | Maths | 35 | minutes dropdown/input |
@@ -66,7 +66,7 @@ Fields are **pre-populated per child** from the `subjects` table:
 | Biology | 47 | minutes dropdown/input |
 | JMSS Prep | 48 | minutes dropdown/input |
 
-**Yeseo's subjects:**
+**First Daughter's subjects:**
 | Field | Subject ID | Input |
 |-------|-----------|-------|
 | Piano Practice | 39 | minutes dropdown/input |
@@ -86,9 +86,9 @@ Pre-populated per child from `workout_types` table:
 
 | Child | Workout | Workout ID | Input |
 |-------|---------|-----------|-------|
-| Yewoo | Jogging | 9 | minutes |
-| Yewoo | Tennis | 11 | minutes |
-| Yeseo | Jogging | 10 | minutes |
+| Second Daughter | Jogging | 9 | minutes |
+| Second Daughter | Tennis | 11 | minutes |
+| First Daughter | Jogging | 10 | minutes |
 
 #### 4. Rest Section
 - Single field: total rest/nap minutes (category = `Rest`)

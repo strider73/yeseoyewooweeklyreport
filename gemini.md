@@ -2,8 +2,8 @@
 
 ## Project Purpose
 This project is a weekly report management tool for two teenage daughters:
-- **Yeseo** (예서) - 16 years old
-- **Yewoo** (여우) - 15 years old
+- **First Daughter** - 16 years old
+- **Second Daughter** - 15 years old
 
 The app helps them manage and track their weekly:
 - **Study** - school work, assignments, study sessions
@@ -17,7 +17,7 @@ The app helps them manage and track their weekly:
 
 ---
 
-## Yeseo's Standard Weekly Schedule (Age 16)
+## First Daughter's Standard Weekly Schedule (Age 16)
 
 ### Weekdays (Mon, Tue, Wed, Fri) - After School
 | Time | Activity | Category | Duration |
@@ -31,7 +31,7 @@ The app helps them manage and track their weekly:
 | 10:00 - 10:30 | Reading | Study/Rest | 30 min |
 | 10:30 | Bedtime | Rest | - |
 
-**Yeseo's Daily Totals (Weekday):**
+**First Daughter's Daily Totals (Weekday):**
 - Study: 5.5 hrs (Maths 2h, Chemistry 2h, Physics 1h, Reading 30min)
 - Workout: 30 min (Jogging)
 - Rest/Routine: 1 hr (Shower, Dinner)
@@ -41,7 +41,7 @@ The app helps them manage and track their weekly:
 
 ---
 
-## Yewoo's Standard Weekly Schedule (Age 15)
+## Second Daughter's Standard Weekly Schedule (Age 15)
 
 ### Weekdays (Mon, Tue, Wed, Fri) - After School
 | Time | Activity | Category | Duration |
@@ -57,7 +57,7 @@ The app helps them manage and track their weekly:
 | 8:30 - 9:00 | Rest / Break | Rest | 30 min |
 | 9:00 - 11:00 | Academic study (rotating) | Study | 2 hrs |
 
-**Yewoo's Academic Subjects (1 hr each, rotating):**
+**Second Daughter's Academic Subjects (1 hr each, rotating):**
 - Chemistry
 - Legal Studies
 - Methods (Maths)
@@ -65,7 +65,7 @@ The app helps them manage and track their weekly:
 
 *Note: Sometimes studies until midnight*
 
-**Yewoo's Daily Totals (Weekday):**
+**Second Daughter's Daily Totals (Weekday):**
 - Study: 5 hrs 20 min (Piano 1h, Music Theory 1h, Composition 1h, Review 20min, Academics 2h)
 - Workout: 30 min (Jogging)
 - Rest/Routine: 1 hr 10 min (Shower, Nap, Break)
